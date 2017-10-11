@@ -55,4 +55,8 @@ int q_deconstructor(FIFOq_p);
 A Function that returns a string representation of the given Queue
 */
 char* FIFO_to_string(FIFOq_p);
+/*
+Getter method that return the size of the queue
+*/
+int getQueueSize(FIFOq_p the_queue);
 #endif
