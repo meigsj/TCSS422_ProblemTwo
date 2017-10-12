@@ -11,22 +11,23 @@
 
 void randomCreatePCB(FIFOq_p target_List);
 
+unsigned int SysStack;
+
 int main(void) {
 
 	// Create function that will create random number of processes, 
 	// between 0 and 5 and puts them in the list  
 	FIFOq_p process_List = q_constructor();
 	FIFOq_p deallocate_List = q_constructor();
-	randomCreatePCB(process_List);
+	
 
-	//printf("%s",	pcb_to_string(process_List->my_node->pcb));
-
-
+	// Scheduler transfers created processes into ready queue
+	FIFOq_p ready_Queue = q_constructor();
 	//----------Main Loop---------
 	// while(1) {
 	printf("%s",	FIFO_to_string(process_List));
-	// Item 1: Scheduler transfers created processes into ready queue
-	FIFOq_p ready_Queue = q_constructor();
+	
+	randomCreatePCB(process_List);
 	int i, temp;
 	temp = getQueueSize(process_List);
 
@@ -37,11 +38,42 @@ int main(void) {
 		q_enqueue(ready_Queue, newNode);
 	}
 
-	printf("%s",	FIFO_to_string(ready_Queue));
-	// }
+	// Dispatcher dequeue the process and pull into running state 
 	// Similuate the running of the current process 
-		// Add PC value to the PCB 
-		// Increment the random number between 3000 and 4000 
+	// Add PC value to the PCB 
+	// Increment the random number between 3000 and 4000 
+	PCB_p current_Running_p = q_dequeue(ready_Queue);
+	current_Running_p->state = running;
+	unsigned int randomPCValue = (rand() % 1001) + 3000;
+	current_Running_p->context->pc = randomPCValue; 
+ 
+	// ISR puts process into interrupt state and pseudo-push into system stack
+	SysStack = current_Running_p->context->pc;
+	current_Running_p->state = interrupted;
+
+	// Pseudo-ISR calls the scheduler, denotes that it's a timer interrupt 
+	// (maybe create function for scheduler)
+	current_Running_p->state = ready;
+	Node_p updateNode = (Node_p)malloc( sizeof(Node_s) );
+	updateNode->pcb = current_Running_p;
+	updateNode->next_node = NULL;
+	q_enqueue(ready_Queue, updateNode);
+
+	// Dequeue the next waiting process, change its state to running, 
+	// and copy its PCB->PC to SysStack
+	PCB_p next_Running_p = q_dequeue(ready_Queue);
+	next_Running_p->state = running;
+	randomPCValue = (rand() % 1001) + 3000;
+	next_Running_p->context->pc = randomPCValue; 
+	SysStack = current_Running_p->context->pc;
+
+	if (temp > 30) {
+		break;
+	}
+	//printf("%s\n", pcb_to_string(current_Running_p));
+	// 
+	//printf("%s",	FIFO_to_string(ready_Queue));
+	// }
 
 	return 0;
 }
@@ -49,7 +81,7 @@ int main(void) {
 void randomCreatePCB(FIFOq_p target_List) {
 
 	int ra, i;
-	// Need to be fix for automatically generate number 0 - 5 
+	// Need to double check for automatically generate number 0 - 5 
 	// Currently only 3 
 	ra = (rand() % 5) + 1;
 	for (i = 0; i < ra; i++) {
