@@ -53,6 +53,14 @@ PCB_p q_dequeue(FIFOq_p the_queue) {
     return pcbToReturn;
 }
 
+// PCB_p q_top(FIFOq_p the_queue) {
+//     if (the_queue == NULL || the_queue->size == 0) {
+//         return NULL;
+//     }
+//     PCB_p pcbToReturn = the_queue->my_node->pcb;
+//     return pcbToReturn;
+// }
+
 FIFOq_p q_constructor() {
     FIFOq_p the_queue = (FIFOq_p)malloc(sizeof(FIFO_s));
     the_queue->size = 0;

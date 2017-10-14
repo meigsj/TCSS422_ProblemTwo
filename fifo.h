@@ -42,6 +42,11 @@ A function that pops off the given pcb from the queue and returns the said pcb t
 PCB_p q_dequeue(FIFOq_p);
 
 /*
+* A function that return only the first item of the queue.
+*/
+// PCB_p q_top(FIFOq_p the_queue);
+
+/*
 A function that creates a Queue and returns the newly constructed Queue.
 */
 FIFOq_p q_constructor();

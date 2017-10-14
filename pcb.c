@@ -75,6 +75,17 @@ char * cpu_context_to_string(CPU_context_p context_ptr) {
     return str;
 }
 
+unsigned int get_pc(PCB_p pcb_ptr) {
+    if (pcb_ptr != NULL)
+        return pcb_ptr->context->pc;
+    return 1;
+}
+
+void set_pc(PCB_p pcb_ptr, unsigned int new_pc) {
+    if (pcb_ptr != NULL)
+        pcb_ptr->context->pc = new_pc;
+}
+
 /************************************************************
 *                PCB_s FUNCTION DEFINITIONS                *
 *************************************************************/
@@ -104,7 +115,7 @@ int pcb_init(PCB_p pcb_ptr) {
     int r = rand() % 16;                        // generate a random number 0-15
 
     pcb_set_pid(pcb_ptr);
-    pcb_ptr->state = new;
+    pcb_ptr->state = created;
     pcb_ptr->parent = 0;                        // ?????????
     pcb_ptr->priority = r;                      // set the priority randomly 
     pcb_ptr->mem = (unsigned char *) pcb_ptr;   // ?????????
@@ -112,6 +123,23 @@ int pcb_init(PCB_p pcb_ptr) {
     pcb_ptr->channel_no = 0;                    // ?????????
     cpu_context_init(pcb_ptr->context);
     return NO_ERR;
+}
+
+/*
+* Get current state of this PCB 
+*/
+enum state_type pcb_get_state(PCB_p pcb_ptr) {
+    if (pcb_ptr != NULL)
+        return pcb_ptr->state;
+    return 1;
+}
+
+/*
+* Sets the state of this PCB 
+*/
+void pcb_set_state(PCB_p pcb_ptr, enum state_type new_state) {
+    if (pcb_ptr != NULL)
+        pcb_ptr->state = new_state;
 }
 
 char * pcb_to_string(PCB_p pcb_ptr) {

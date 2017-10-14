@@ -41,7 +41,7 @@ typedef CPU_context_s * CPU_context_p;
 /*
 * Possible states of the pcb.
 */
-enum state_type {new, ready, running, interrupted, waiting, halted};
+enum state_type {created, ready, running, interrupted, blocked, terminated};
 
 /*
 * Process control block struct. 
@@ -116,6 +116,16 @@ int cpu_context_init(CPU_context_p context_ptr);
 */
 char * cpu_context_to_string(CPU_context_p context_ptr);
 
+/*
+* Get PC value of current PCB 
+*/
+unsigned int get_pc(PCB_p pcb_ptr);
+
+/*
+* Set PC valueu for the current PCB
+*/
+void set_pc(PCB_p pcb_ptr, unsigned int new_pc);
+
 /**********************************************
 *       PCB_s MEMBER FUNCTIONS PROTOTYPES     *
 ***********************************************/
@@ -142,6 +152,16 @@ int pcb_set_pid(PCB_p pcb_ptr);
 * If pcb_ptr is invalid returns a -1 otherwise 0.
 */
 int pcb_init(PCB_p pcb_ptr);
+
+/*
+* Get current state of this PCB 
+*/
+enum state_type pcb_get_state(PCB_p pcb_ptr);
+
+/*
+* Sets the state of this PCB 
+*/
+void pcb_set_state(PCB_p pcb_ptr, enum state_type new_state); 
 
 /*
 * Write the contentens of this PCB as a string to the 
